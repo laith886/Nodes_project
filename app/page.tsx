@@ -1,33 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import NodeList, { NodeType } from "./components/NodeList";
 import Canvas from "./components/Canvas";
-
-interface CanvasNode {
-  id: string;
-  type: NodeType;
-  value: string;
-  color: string;
-  x: number;
-  y: number;
-}
+import ChatBot from "./components/ChatBot";
+import {
+  AUTOMATIONS,
+  AutomationKind,
+  CanvasNode,
+  createAutomationNodes,
+  createNode,
+} from "./components/AgentLogic";
 
 export default function Home() {
   const [nodes, setNodes] = useState<CanvasNode[]>([]);
 
-  const handleAddNode = (nodeType: NodeType) => {
-    const newNode: CanvasNode = {
-      id: `${nodeType}-${Date.now()}`,
-      type: nodeType,
-      value: "",
-      color: "#8b5cf6",
-      x: 40 + nodes.length * 20,
-      y: 40 + nodes.length * 20,
-    };
+  const handleAddNode = useCallback((nodeType: NodeType) => {
+    setNodes((prev) => [...prev, createNode(nodeType, prev.length)]);
+  }, []);
 
-    setNodes((prev) => [...prev, newNode]);
-  };
+  const handleClearCanvas = useCallback(() => {
+    setNodes([]);
+  }, []);
+
+  const handleRunAutomation = useCallback((automation: AutomationKind) => {
+    const { nodes: types } = AUTOMATIONS[automation];
+    setNodes((prev) => [...prev, ...createAutomationNodes(types, prev.length)]);
+  }, []);
 
   return (
     <div className="flex h-screen bg-zinc-50 dark:bg-black">
@@ -40,12 +39,19 @@ export default function Home() {
           </h1>
 
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Each node has its own text and color
+            Drag from the sidebar or chat with the Agent
           </p>
         </header>
 
         <Canvas nodes={nodes} setNodes={setNodes} />
       </div>
+
+      <ChatBot
+        nodeCount={nodes.length}
+        onAddNode={handleAddNode}
+        onClearCanvas={handleClearCanvas}
+        onRunAutomation={handleRunAutomation}
+      />
     </div>
   );
 }
