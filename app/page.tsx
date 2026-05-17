@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import NodeList, { NodeType } from "./components/NodeList";
 import Canvas from "./components/Canvas";
@@ -38,9 +39,17 @@ export default function Home() {
             Vibe Code Automation
           </h1>
 
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Drag from the sidebar or chat with the Agent
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Drag from the sidebar or chat with the Agent
+            </p>
+            <Link
+              href="/estimation"
+              className="text-sm font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300 transition-colors"
+            >
+              Software Estimation →
+            </Link>
+          </div>
         </header>
 
         <Canvas nodes={nodes} setNodes={setNodes} />
